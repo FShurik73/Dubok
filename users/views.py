@@ -1,33 +1,55 @@
-from django.shortcuts import render
+from django.contrib import auth
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
-from users.forms import UserLoginForm
+from users.forms import UserLoginForm, UserRegistrationForm
 
 
 def login(request):
-    form = UserLoginForm()
-    context: dict[str, str] = {
-        'title': 'Дубок - Авторизация',
-        'form': form
-    }
-    return render(request, 'users/login.html', context=context)
+    if request.method == "POST":
+        form = UserLoginForm(data=request.POST)
+        if form.is_valid():
+            username = request.POST["username"]
+            password = request.POST["password"]
+            user = auth.authenticate(username=username, password=password)
+            if user:
+                auth.login(request, user)
+                return HttpResponseRedirect(reverse("main:index"))
+
+    else:
+        form = UserLoginForm()
+
+    context: dict[str, str] = {"title": "Дубок - Авторизация", "form": form}
+    return render(request, "users/login.html", context=context)
 
 
 def registration(request):
+
+    if request.method == "POST":
+        form = UserRegistrationForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            user = form.instance
+            auth.login(request, user)
+            return HttpResponseRedirect(reverse("main:index"))
+    else:
+        form = UserRegistrationForm()
+
     context: dict[str, str] = {
-        'title': 'Дубок - Регистрация',
+        "title": "Дубок - Регистрация",
+        "form": form,
     }
-    return render(request, 'users/registration.html', context=context)
+    return render(request, "users/registration.html", context=context)
 
 
 def profile(request):
     context: dict[str, str] = {
-        'title': 'Дубок - Кабинет',
+        "title": "Дубок - Кабинет",
     }
-    return render(request, 'users/profile.html', context=context)
+    return render(request, "users/profile.html", context=context)
 
 
 def logout(request):
-    context: dict[str, str] = {
-        'title': 'Дубок - Выход',
-    }
-    return render(request, 'users/logout.html', context=context)
+    auth.logout(request)
+    return redirect(reverse("main:index"))
