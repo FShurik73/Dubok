@@ -16,14 +16,17 @@ def login(request):
             user = auth.authenticate(username=username, password=password)
             if user:
                 auth.login(request, user)
-                messages.success(request,f"{user.username},'Вы успешно вошли!'")
+                messages.success(request,f"{username},'Вы успешно вошли!'")
+                redirect_page = request.POST.get("next", None)
+                if redirect_page and redirect_page != reverse('user:login'):
+                    return HttpResponseRedirect(request.POST.get("next"))
                 return HttpResponseRedirect(reverse("main:index"))
 
     else:
         form = UserLoginForm()
 
     context: dict[str, str] = {"title": "Дубок - Авторизация", "form": form}
-    return render(request, "users/login.html", context=context)
+    return render(request, "users/login.html", context)
 
 
 def registration(request):
@@ -61,7 +64,10 @@ def profile(request):
     }
     return render(request, "users/profile.html", context=context)
 
+def users_cart(request):
+    return render(request, "users/users_cart.html")
 
+@login_required
 def logout(request):
     messages.success(request, f'{request.user.username}"Вы вышли из аккаунта!"')
     auth.logout(request)
