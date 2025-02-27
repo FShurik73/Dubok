@@ -1,4 +1,5 @@
-{% load static %}
+{% load static %} 
+{% load cache %}
 {% load goods_tags %}
 
 <!DOCTYPE html>
@@ -19,7 +20,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{% static "deps/favicon/favicon-32x32.png" %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static "deps/favicon/favicon-16x16.png" %}">
     <link rel="manifest" href="{% static "deps/favicon/site.webmanifest" %}">
-    <title>{{title}}</title>
+    <title>{{ title }}</title>
 </head>
 
 <body>
@@ -49,29 +50,28 @@
                             <a class="nav-link  text-white" href="{% url "user:users_cart" %}">Корзина</a>
                         </li>
                         {% if not user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link  text-white" href="{% url "user:login" %}">Войти</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link  text-white" href="{% url "user:login" %}">Войти</a>
+                            </li>
                         {% else %}
-                        <li class="nav-item dropdown ">
-                            <a class="nav-link dropdown-toggle text-white" href="#" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                Мой профиль
-                            </a>
-                            <ul class="dropdown-menu">
-
-                                <li><a class="dropdown-item  text-white" href="{% url "user:users_cart" %}">Корзина</a></li>
-                                <li><a class="dropdown-item  text-white" href="{% url "user:profile" %}">Личный кабинет</a>
-                                </li>
-                                {% if user.is_admin or user.is_staff %}
-                                <li><a class="dropdown-item  text-white" href="{% url "admin:index" %}">Админ панель</a></li>
-                                {% endif %}
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item  text-white" href="{% url "user:logout" %}">Выйти</a></li>
-                            </ul>
-                        </li>
+                            <li class="nav-item dropdown ">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Мой профиль
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item  text-white" href="{% url "user:users_cart" %}">Корзина</a></li>
+                                    <li><a class="dropdown-item  text-white" href="{% url "user:profile" %}">Личный кабинет</a>
+                                    </li>
+                                    {% if user.is_admin or user.is_staff %}
+                                        <li><a class="dropdown-item  text-white" href="{% url "admin:index" %}">Админ панель</a></li>
+                                    {% endif %}
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item  text-white" href="{% url "user:logout" %}">Выйти</a></li>
+                                </ul>
+                            </li>
                         {% endif %}
                     </ul>
                     <form class="d-flex" role="search" action="{% url "catalog:search" %}" method="get">
@@ -94,17 +94,19 @@
                         <img class="mx-1" src="{% static "deps/icons/grid-fill.svg" %}" alt="Catalog Icon" width="16"
                             height="16">
                     </button>
-                    <ul class="dropdown-menu bg-dark" data-bs-theme="dark">
+                    <ul class="dropdown-menu bg-dark" data-bs-theme="dark"> 
+                        {% cache 60 catalog_categories %}
                         {% tag_categories as categories %}
                         {% for category in categories %}
                             <li><a class="dropdown-item text-white" href="{% url "catalog:index" category.slug %}">{{category.name}}</a></li>
                         {% endfor %}
+                        {% endcache %}
 
 
                     </ul>
                 </div>
                 <!-- Значек корзины, вызывает модальное окно -->
-        {% block modal_cart %}{% endblock  %}
+                {% block modal_cart %}{% endblock  %}
                 <!-- Закончилась разметка модального окна -->
             </div>
         </div>
@@ -122,9 +124,10 @@
             </div>
         </div>
     </section>
+
     {% block footer %}{% endblock  %}
+    
     <script src="{% static "deps/js/jquery/jquery-3.7.0.min.js" %}"></script>
-    <script src="{% static "deps/js/jquery-events.js" %}"></script>
     <script src="{% static "deps/js/jquery-ajax.js" %}"></script>
     <script src="{% static "deps/js/bootstrap/bootstrap.bundle.min.js" %}"></script>
 </body>

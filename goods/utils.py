@@ -1,6 +1,10 @@
 from django.db.models import Q
-from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery, SearchHeadline
-
+from django.contrib.postgres.search import (
+    SearchVector, 
+    SearchRank, 
+    SearchQuery, 
+    SearchHeadline,
+)
 from goods.models import Products
 
 

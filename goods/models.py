@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 
@@ -43,9 +44,13 @@ class Products(models.Model):
         db_table = "product"
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
-
+        ordering = ("id",)
+        
     def __str__(self):
-        return f"{self.name} Количество: {self.quantity}"
+        return f"{self.name} Количество - {self.quantity}"
+    
+    def get_absolut_url(self):
+        return reverse('catalog:product', kwargs={'product_slug': self.slug})
 
     def display_id(self):
         return f"{self.id:05}"

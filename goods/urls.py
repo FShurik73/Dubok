@@ -22,8 +22,8 @@ from goods import views
 app_name = 'goods'
 
 urlpatterns: list = [
-    path('<slug:category_slug>/', views.catalog, name='index'),
-    path('search/', views.catalog, name='search'),
-    path('product/<slug:product_slug>/', views.product, name='product'),
+    path('search/', views.CatalogView.as_view(), name='search'),
+    path('<slug:category_slug>/', views.CatalogView.as_view(), name='index'),
+    path('product/<slug:product_slug>/', views.ProductView.as_view(), name='product'),
 ]
  
