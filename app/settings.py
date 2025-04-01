@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-
+import os
 from pathlib import Path
 
-from django.http import HttpResponseNotFound
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # from django.http import HttpResponseNotFound
 
@@ -25,10 +27,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-by6c$sci(o7-akw760s4y2_kmnv3mjaf44x3=1g-4(h^nvp-0k"
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+if os.environ.get("DEBUG") == "False":
+    DEBUG = False
+else:
+    DEBUG = True
+# 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+SESSION_COOKIE_SECURE =True
+CSRF_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -91,14 +102,25 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "dubok",
-        "USER": "dubok",
-        "PASSWORD": "Fafyfcbq1973",
-        "HOST": "localhost",
-        "PORT": "5432",
-
+        "ENGINE": "django.db.backend.mysql",
+        "NAME": os.getenv("MYSQL_DBNAME"),
+        "USER": os.getenv("MYSQL_USER"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD"),
+        "HOST": os.getenv("MYSQL_HOST"),
+        "OPTIONS": {
+            "init_command": "SET NAMES 'utf8mb4';SET sql_mode = 'STRICT_TRANS_TABLES'",
+            "charset": "utf8mb4",
+        },
     }
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": "dubok",
+    #     "USER": "dubok",
+    #     "PASSWORD": "Fafyfcbq1973",
+    #     "HOST": "localhost",
+    #     "PORT": "5432",
+
+    # }
 }
 
 CACHES = {
